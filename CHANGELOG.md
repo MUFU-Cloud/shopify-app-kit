@@ -4,6 +4,13 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). While the version is 0.x, breaking changes
 bump the minor version.
 
+## [0.2.1] - 2026-11-16
+
+### Changed
+
+- Published to npm; README installs from the registry.
+- Releases are published from `v*` tags by GitHub Actions.
+
 ## [0.2.0] - 2026-11-16
 
 ### Changed
@@ -35,5 +42,6 @@ bump the minor version.
 - Admin API helpers: shop id, metafields, discount code lookup, revenue web pixel.
 - Klaviyo signup with the public key.
 
+[0.2.1]: https://github.com/MUFU-Cloud/shopify-app-kit/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/MUFU-Cloud/shopify-app-kit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/MUFU-Cloud/shopify-app-kit/releases/tag/v0.1.0
