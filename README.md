@@ -1,5 +1,6 @@
 # @mufucloud/shopify-app-kit
 
+[![npm](https://img.shields.io/npm/v/@mufucloud/shopify-app-kit)](https://www.npmjs.com/package/@mufucloud/shopify-app-kit)
 [![CI](https://github.com/MUFU-Cloud/shopify-app-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/MUFU-Cloud/shopify-app-kit/actions/workflows/ci.yml)
 
 Server helpers shared by mufucloud's Shopify apps (React Router template): plan checks with Shopify
@@ -8,13 +9,11 @@ TypeScript, ESM only, no runtime dependencies.
 
 ## Install
 
-Install from GitHub, pinned to a tag:
-
 ```bash
-npm install github:MUFU-Cloud/shopify-app-kit#v0.2.0
+npm install @mufucloud/shopify-app-kit
 ```
 
-`dist` is not committed; npm builds it on install through the `prepare` script. Node 20.19 or newer.
+Node 20.19 or newer.
 
 ## Environment
 
@@ -156,8 +155,9 @@ the admin helpers, for example `setMetafields(admin, ns, ownerId, fields, { logg
 
 ## Versioning
 
-Pin a tag in `package.json` and bump it deliberately. While the version is 0.x, breaking changes bump
-the minor version (0.2 to 0.3), so read the [changelog](CHANGELOG.md) before upgrading.
+While the version is 0.x, breaking changes bump the minor version (0.2 to 0.3), so use a caret range
+(`^0.2.0`) and read the [changelog](CHANGELOG.md) before upgrading. Releases are published to npm from
+the `v*` tags by GitHub Actions.
 
 ## License
 
