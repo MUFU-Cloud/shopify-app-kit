@@ -6,6 +6,7 @@ export interface PartnerApiConfig {
   appGid: string;
   apiVersion?: string;
   timeoutMs?: number;
+  fetch?: typeof fetch;
 }
 
 export interface SubscriptionItem {
@@ -23,7 +24,8 @@ export function partnerApiConfigFromEnv(env: Record<string, string | undefined> 
 // null = no subscription. Throws on API errors.
 export async function fetchActiveSubscription(config: PartnerApiConfig, shopGid: string): Promise<SubscriptionItem[] | null> {
   const version = config.apiVersion ?? PARTNER_API_VERSION;
-  const res = await fetch(`https://partners.shopify.com/${config.orgId}/api/${version}/graphql.json`, {
+  const doFetch = config.fetch ?? fetch;
+  const res = await doFetch(`https://partners.shopify.com/${config.orgId}/api/${version}/graphql.json`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
