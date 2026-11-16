@@ -61,8 +61,15 @@ test("timeout returns false", async () => {
   const ok = await subscribeToKlaviyo({
     ...base,
     timeoutMs: 10,
+    // Node 20's AbortSignal.timeout timer doesn't keep the event loop alive
     fetch: (_url, init) =>
-      new Promise((_resolve, reject) => init.signal.addEventListener("abort", () => reject(init.signal.reason))),
+      new Promise((_resolve, reject) => {
+        const keepAlive = setTimeout(() => {}, 5000);
+        init.signal.addEventListener("abort", () => {
+          clearTimeout(keepAlive);
+          reject(init.signal.reason);
+        });
+      }),
   });
   assert.equal(ok, false);
 });
