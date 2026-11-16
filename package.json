@@ -1,25 +1,29 @@
 {
   "name": "@mufucloud/shopify-app-kit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Shared server helpers for mufucloud Shopify apps: plan checks with Shopify App Pricing (Partner API + Billing API), shop metafields, revenue web pixel, discount lookup and Klaviyo signup.",
   "license": "MIT",
   "author": "mufucloud",
   "type": "module",
   "repository": { "type": "git", "url": "git+https://github.com/MUFU-Cloud/shopify-app-kit.git" },
+  "homepage": "https://github.com/MUFU-Cloud/shopify-app-kit#readme",
+  "bugs": { "url": "https://github.com/MUFU-Cloud/shopify-app-kit/issues" },
   "keywords": ["shopify", "shopify-app", "app-pricing", "partner-api", "billing", "metafields", "web-pixel", "klaviyo"],
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" }
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./package.json": "./package.json"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": ["dist", "README.md", "LICENSE"],
   "sideEffects": false,
   "engines": { "node": ">=20.19" },
+  "publishConfig": { "access": "public" },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepare": "npm run build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node --test test/*.test.js"
+    "test": "npm run build && node --test"
   },
   "devDependencies": {
     "@types/node": "^22.18.8",
