@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). While the version is 0.x, breaking changes
 bump the minor version.
 
-## [0.2.0] - Unreleased
+## [0.2.0] - 2026-11-16
 
 ### Changed
 
@@ -13,7 +13,7 @@ bump the minor version.
 - `setMetafields` returns the `userErrors` and sends metafields in chunks of 25.
 - `ensureWebPixel` checks the errors of the update mutation, not only of the create.
 - `subscribeToKlaviyo` sets explicit email marketing consent, has a timeout and returns `false` on
-  network errors instead of throwing.
+  network errors instead of throwing. Klaviyo API revision 2026-10-15.
 
 ### Added
 
