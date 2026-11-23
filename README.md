@@ -4,7 +4,8 @@
 [![CI](https://github.com/MUFU-Cloud/shopify-app-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/MUFU-Cloud/shopify-app-kit/actions/workflows/ci.yml)
 
 Server helpers shared by mufucloud's Shopify apps (React Router template): plan checks with Shopify
-App Pricing, Admin API helpers, Klaviyo signup, Free plan limits and hydration-safe formatting.
+App Pricing, Admin API helpers, Klaviyo signup, Free plan limits, hydration-safe formatting, and
+request validation for web pixel conversions, lead forms and compliance webhooks.
 TypeScript, ESM only, no runtime dependencies.
 
 ## Install
@@ -147,6 +148,93 @@ formatUtcDateTime("2026-11-16T09:05:00Z"); // "2026-11-16 09:05 UTC"
 formatUtcDate(new Date());                 // "2026-11-16"
 ```
 
+## Request bodies
+
+```ts
+import { readJsonObject, clip } from "@mufucloud/shopify-app-kit";
+
+const body = await readJsonObject(request); // null if not JSON, {} if JSON but not an object
+if (!body) return new Response("Invalid JSON", { status: 400 });
+const locale = clip(body.locale, 16);       // non-empty string cut to 16 chars, or null
+```
+
+`readJsonObject` reads the raw text, so it also handles `text/plain` bodies.
+
+## Conversion endpoint
+
+For the public route that receives `checkout_completed` events from the app's web pixel. The pixel
+runs in Shopify's sandbox, so the request can't be authenticated: check that the shop has the app
+installed and store each order once.
+
+```ts
+import { corsResponse, parseConversion, readJsonObject } from "@mufucloud/shopify-app-kit";
+
+export const loader = ({ request }) => (request.method === "OPTIONS" ? corsResponse(204) : corsResponse(405));
+
+export const action = async ({ request }) => {
+  if (request.method === "OPTIONS") return corsResponse(204);
+  const body = await readJsonObject(request);
+  if (!body) return corsResponse(400, "Invalid JSON");
+  const conversion = parseConversion(body, { attributedKey: "recommended" });
+  if (!conversion) return corsResponse(400, "Invalid payload");
+  // { shop, orderId, total, attributed, currency }; look up the shop, then upsert by (shop, orderId)
+  return corsResponse(200, "ok");
+};
+```
+
+The shop must be a `*.myshopify.com` domain, the order id is cut to 128 characters and amounts must
+be between 0 and 10,000,000 (`parseMoney`). `attributed` is read from `attributedKey`, defaults to 0
+and never exceeds the total. Also exported: `isShopDomain`, `parseMoney`, `CONVERSION_CORS_HEADERS`.
+
+## Lead form
+
+```ts
+import { parseLead } from "@mufucloud/shopify-app-kit";
+
+const lead = parseLead(body);
+if (!lead.ok) return Response.json({ error: lead.error }, { status: 400 }); // "invalid_email" | "consent_required"
+// lead.email is trimmed and lowercased
+```
+
+Consent must be exactly `true`. `normalizeEmail` and `isValidEmail` (at most 254 characters) are
+exported too.
+
+## Compliance webhooks
+
+```ts
+import { customerEmail } from "@mufucloud/shopify-app-kit";
+
+case "CUSTOMERS_REDACT": {
+  const email = customerEmail(payload); // trimmed, lowercased, or null
+  if (email) await db.lead.deleteMany({ where: { shop, email } });
+  break;
+}
+```
+
+## Translations
+
+```ts
+import { baseLanguage, interpolate, parseLocalized, withFallback } from "@mufucloud/shopify-app-kit";
+
+const ADMIN = withFallback({ en, tr, de }); // missing keys come from en, translated ones stay
+const lang = baseLanguage(searchParams.get("locale")); // "pt-BR" -> "pt", empty -> "en"
+interpolate("{n} of {n} left", { n: 3 });   // "3 of 3 left"
+
+// texts stored per shop locale as JSON, with legacy plain strings
+parseLocalized('{"default":"Hi","tr":"Selam"}', "Hello"); // { default: "Hi", tr: "Selam" }
+parseLocalized("Hi", "Hello");                            // { default: "Hi" }
+parseLocalized(null, "Hello");                            // { default: "Hello" }
+```
+
+## Pricing page
+
+```ts
+import { pricingPlansUrl } from "@mufucloud/shopify-app-kit";
+
+pricingPlansUrl("demo.myshopify.com", "my-app-handle");
+// "https://admin.shopify.com/store/demo/charges/my-app-handle/pricing_plans"
+```
+
 ## Logging
 
 Helpers that log take an optional `logger` (anything with `error`/`warn`, defaults to `console`):
@@ -155,8 +243,8 @@ the admin helpers, for example `setMetafields(admin, ns, ownerId, fields, { logg
 
 ## Versioning
 
-While the version is 0.x, breaking changes bump the minor version (0.2 to 0.3), so use a caret range
-(`^0.2.0`) and read the [changelog](CHANGELOG.md) before upgrading. Releases are published to npm from
+While the version is 0.x, breaking changes bump the minor version (0.3 to 0.4), so use a caret range
+(`^0.3.0`) and read the [changelog](CHANGELOG.md) before upgrading. Releases are published to npm from
 the `v*` tags by GitHub Actions.
 
 ## License

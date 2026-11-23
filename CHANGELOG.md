@@ -4,6 +4,24 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). While the version is 0.x, breaking changes
 bump the minor version.
 
+## [0.3.0] - 2026-11-23
+
+### Added
+
+- `readJsonObject` and `clip` for request bodies.
+- `parseConversion`, `parseMoney`, `isShopDomain`, `corsResponse` and `CONVERSION_CORS_HEADERS` for
+  the endpoint that receives web pixel conversions.
+- `parseLead`, `normalizeEmail` and `isValidEmail` for storefront lead forms.
+- `customerEmail` for the customers/redact and customers/data_request webhooks.
+- `withFallback`, `baseLanguage`, `interpolate` and `parseLocalized` for translations.
+- `pricingPlansUrl`.
+
+### Changed
+
+- Built with TypeScript 7.
+- CI also tests on Node 24, the version releases are published with.
+- `.gitattributes` keeps LF line endings, so a build on Windows matches the published one.
+
 ## [0.2.1] - 2026-11-16
 
 ### Changed
